@@ -1,0 +1,11 @@
+{
+    "prowlarr": {
+        "save_path": "/downloads/completed/Prowlarr"
+    },
+    "radarr": {
+        "save_path": "/downloads/completed/Radarr"
+    },
+    "sonarr": {
+        "save_path": "/downloads/completed/Sonarr"
+    }
+}

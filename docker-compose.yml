@@ -1,0 +1,188 @@
+version: "3.8"
+
+services:
+  flaresolverr:
+    image: flaresolverr/flaresolverr:${FLARESOLVERR_VERSION}
+    container_name: flaresolverr
+    restart: unless-stopped
+    environment: [ "TZ=${TIMEZONE}" ]
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "8191:8191"
+
+  gluetun:
+    image: qmcgaw/gluetun:${GLUETUN_VERSION}
+    container_name: gluetun
+    # line above must be uncommented to allow external containers to connect.
+    # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+#      - 8191:8191/tcp # flaresolverr
+#      - 9696:9696/tcp # prowlarr
+      - 8085:8085/tcp # qBittorrent WebUI
+      - 6881:6881/tcp # qBittorrent
+      - 6881:6881/udp # qBittorrent
+      - 8080:8080/tcp # SABnzbd
+      - 8080:8080/udp # SABnzbd
+      - 8086:8086/tcp # JOAL
+#      - 7878:7878/tcp # radarr
+#      - 8989:8989/tcp # sonarr
+    volumes:
+      - ${CONFIG_FOLDER}/gluetun:/gluetun
+    env_file: .env
+    environment:
+      - PGID=${GID}
+      - PUID=${UID}
+      - UMASK=${UMASK}
+      - TZ=${TIMEZONE}
+
+  joal:
+    image: anthonyraymond/joal:${JOAL_VERSION}
+    container_name: joal
+    network_mode: service:gluetun
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ${CONFIG_FOLDER}/joal/config:/data:z
+      - ${TORRENT_DOWNLOADS_FOLDER}/torrents:/data/torrents:z
+    command: [ "--joal-conf=/data", "--spring.main.web-environment=true", "--server.port=8086", "--joal.ui.path.prefix=joal", "--joal.ui.secret-token=joal" ]
+
+  overseerr:
+    image: linuxserver/overseerr:${OVERSEERR_VERSION}
+    container_name: overseerr
+    restart: unless-stopped
+    environment:
+      [ "PGID=${GID}", "PUID=${UID}", "UMASK=${UMASK}", "TZ=${TIMEZONE}" ]
+    volumes:
+      - ${CONFIG_FOLDER}/overseerr/config:/config:z
+    ports:
+      - 5055:5055
+
+  plex:
+    image: linuxserver/plex:${PLEX_VERSION}
+    container_name: plex
+    restart: unless-stopped
+    # Leave commented unless your machine is capable of Hardware acceleration - Intel / Nvidia
+    # More information at; https://github.com/linuxserver/docker-plex#hardware-acceleration
+    # devices: [ "/dev/dri:/dev/dri" ] # Intel QuickSync
+    env_file: ${CONFIG_FOLDER}/plex/.env
+    environment:
+      ["PGID=${GID}", "PUID=${UID}", "UMASK=${UMASK}", "TZ=${TIMEZONE}"]
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_FOLDER}/plex/config:/config:z
+      - ${CONFIG_FOLDER}/plex/transcode:/transcode:z
+      - ${MEDIA_FOLDER}/Series:/data/Series:z
+      - ${MEDIA_FOLDER}/Movies:/data/Movies:z
+    ports:
+      - "32400:32400/tcp"
+      - "1900:1900/udp"
+      - "8324:8324/tcp"
+      - "32410:32410/udp"
+      - "32412:32412/udp"
+      - "32413:32413/udp"
+      - "32414:32414/udp"
+      - "32469:32469/tcp"
+
+  prowlarr:
+    image: linuxserver/prowlarr:${PROWLARR_VERSION}
+    container_name: prowlarr
+    restart: unless-stopped
+    environment:
+      ["PGID=${GID}", "PUID=${UID}", "UMASK=${UMASK}", "TZ=${TIMEZONE}"]
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_FOLDER}/prowlarr/config:/config:z
+      - ${RECYCLE_FOLDER}/prowlarr:/recycle:z
+      - ${USENET_BLACKHOLE_FOLDER}:/blackhole:z
+      - ${USENET_DOWNLOADS_FOLDER}:/downloads:z
+      - ${MEDIA_FOLDER}/AudioBooks:/audiobooks:z
+      - ${MEDIA_FOLDER}/Movies:/movies:z
+      - ${MEDIA_FOLDER}/Series:/series:z
+    ports:
+      - "9696:9696"
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:${QBITTORRENT_VERSION}
+    container_name: qbittorrent
+    network_mode: service:gluetun
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      - PGID=${GID}
+      - PUID=${UID}
+      - UMASK=${UMASK}
+      - TZ=${TIMEZONE}
+      - WEBUI_PORT=8085
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_FOLDER}/qbittorrent/config:/config:z
+      - ${TORRENT_BLACKHOLE_FOLDER}:/blackhole:z
+      - ${TORRENT_DOWNLOADS_FOLDER}:/downloads:z
+      - ${MEDIA_FOLDER}/Movies:/movies:z
+      - ${MEDIA_FOLDER}/Series:/tv:z
+
+  radarr:
+    image: linuxserver/radarr:${RADARR_VERSION}
+    container_name: radarr
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      ["PGID=${GID}", "PUID=${UID}", "UMASK=${UMASK}", "TZ=${TIMEZONE}"]
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_FOLDER}/radarr/config:/config:z
+      - ${RECYCLE_FOLDER}/radarr:/recycle:z
+      - ${TORRENT_DOWNLOADS_FOLDER}:/downloads/torrent:z
+      - ${TORRENT_DOWNLOADS_FOLDER}/completed/Radarr:/downloads/completed/Radarr:z
+      - ${USENET_DOWNLOADS_FOLDER}:/downloads/usenet:z
+      - ${USENET_DOWNLOADS_FOLDER}/completed/Movies:/downloads/completed/Movies:z
+      - ${MEDIA_FOLDER}/Movies:/movies:z
+    ports:
+      - "7878:7878"
+
+  sonarr:
+    image: linuxserver/sonarr:${SONARR_VERSION}
+    container_name: sonarr
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      ["PGID=${GID}", "PUID=${UID}", "UMASK=${UMASK}", "TZ=${TIMEZONE}"]
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_FOLDER}/sonarr/config:/config:z
+      - ${RECYCLE_FOLDER}/sonarr:/recycle:z
+      - ${TORRENT_DOWNLOADS_FOLDER}/completed/Sonarr:/downloads/completed/Sonarr:z
+      - ${TORRENT_DOWNLOADS_FOLDER}:/downloads/torrent:z
+      - ${USENET_DOWNLOADS_FOLDER}:/downloads/usenet:z
+      - ${USENET_DOWNLOADS_FOLDER}/completed/Series:/downloads/completed/Series:z
+      - ${MEDIA_FOLDER}/Series:/series:z
+      - ${MEDIA_FOLDER}/tv:/tv:z
+    ports:
+      - "8989:8989"
+
+  tautulli:
+    image: linuxserver/tautulli:${TAUTULLI_VERSION}
+    container_name: tautulli
+    restart: unless-stopped
+    environment:
+      ["PGID=${GID}", "PUID=${UID}", "UMASK=${UMASK}", "TZ=${TIMEZONE}"]
+    volumes:
+      - ${CONFIG_FOLDER}/tautulli/config:/config:z
+    ports:
+      - "8181:8181"
