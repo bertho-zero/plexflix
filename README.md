@@ -15,9 +15,9 @@
 - Configurer Plex en séléctionnant les 2 bibliothèques
 - Laisser les paramètres Radaar et Sonarr
 
-## Synchroniser la bibliothèque Plex à Radarr & Sonarr
+## Ajouter des indexers
 
-Allez dans "Settings" > "Connect" et ajoutez "Plex Media Server".
+Pour que Radarr et Sonarr puissent chercher et télécharger du contenu automatiquement il faut ajouter un ou plusieurs indexers à Prowlarr.
 
 ## Récupérer l'historique Tautulli dans Overseerr
 
