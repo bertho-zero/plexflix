@@ -1,9 +1,9 @@
 {
- "clientId": "584b4603-f699-46b6-8217-a2f15ced36ed",
- "vapidPrivate": "YQg3nByttpwyL_2Oo4tFGEMNSYt_AAWDu9f6pIT2PQ8",
- "vapidPublic": "BLy4gh9XsO7NIjzVinnZssHpvcoMYJ0JbcblFe5olnz6UhxdtLCquXZKNxVbYPtRHLmu95g559k9awPmNEcLab0",
+ "clientId": "",
+ "vapidPrivate": "",
+ "vapidPublic": "",
  "main": {
-  "apiKey": "MTcwNjM2MDM4Njg4NmUzYjI0YjllLTJkYTUtNDQ3MC1hOTgzLTg1N2NiMWMwYWNkMQ==",
+  "apiKey": "",
   "applicationTitle": "Overseerr",
   "applicationUrl": "",
   "csrfProtection": false,
@@ -20,29 +20,14 @@
   "originalLanguage": "",
   "trustProxy": false,
   "partialRequestsEnabled": true,
-  "locale": "fr"
+  "locale": "en"
  },
  "plex": {
   "name": "Plex",
   "ip": "plex",
   "port": 32400,
   "useSsl": false,
-  "libraries": [
-   {
-    "id": "1",
-    "name": "Films",
-    "enabled": true,
-    "type": "movie",
-    "lastScan": 1706360405058
-   },
-   {
-    "id": "2",
-    "name": "Séries TV",
-    "enabled": true,
-    "type": "show",
-    "lastScan": 1706360405065
-   }
-  ]
+  "libraries": []
  },
  "tautulli": {},
  "radarr": [
