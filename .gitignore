@@ -5,3 +5,8 @@
 /configs-dev
 
 /configs/tautulli/config
+
+/media
+/shared
+
+!.gitkeep
