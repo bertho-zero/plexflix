@@ -103,8 +103,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${CONFIG_FOLDER}/prowlarr/config:/config:z
       - ${RECYCLE_FOLDER}/prowlarr:/recycle:z
-      - ${USENET_BLACKHOLE_FOLDER}:/blackhole:z
-      - ${USENET_DOWNLOADS_FOLDER}:/downloads:z
       - ${MEDIA_FOLDER}/Movies:/movies:z
       - ${MEDIA_FOLDER}/Series:/series:z
     ports:
@@ -145,8 +143,6 @@ services:
       - ${RECYCLE_FOLDER}/radarr:/recycle:z
       - ${TORRENT_DOWNLOADS_FOLDER}:/downloads/torrent:z
       - ${TORRENT_DOWNLOADS_FOLDER}/completed/Radarr:/downloads/completed/Radarr:z
-      - ${USENET_DOWNLOADS_FOLDER}:/downloads/usenet:z
-      - ${USENET_DOWNLOADS_FOLDER}/completed/Movies:/downloads/completed/Movies:z
       - ${MEDIA_FOLDER}/Movies:/movies:z
     ports:
       - "7878:7878"
@@ -166,8 +162,6 @@ services:
       - ${RECYCLE_FOLDER}/sonarr:/recycle:z
       - ${TORRENT_DOWNLOADS_FOLDER}/completed/Sonarr:/downloads/completed/Sonarr:z
       - ${TORRENT_DOWNLOADS_FOLDER}:/downloads/torrent:z
-      - ${USENET_DOWNLOADS_FOLDER}:/downloads/usenet:z
-      - ${USENET_DOWNLOADS_FOLDER}/completed/Series:/downloads/completed/Series:z
       - ${MEDIA_FOLDER}/Series:/series:z
     ports:
       - "8989:8989"
