@@ -126,6 +126,22 @@ services:
       - ${TORRENT_BLACKHOLE_FOLDER}:/blackhole:z
       - ${TORRENT_DOWNLOADS_FOLDER}:/downloads:z
 
+  qbittorrent-port-forward-gluetun-server:
+    image: mjmeli/qbittorrent-port-forward-gluetun-server
+    container_name: qbittorrent-port-forward-gluetun-server
+    network_mode: "service:gluetun"
+    depends_on:
+      qbittorrent:
+        condition: service_started
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      - QBT_USERNAME=qbittorrent
+      - QBT_PASSWORD=qbittorrent
+      - QBT_ADDR=http://localhost:8085
+      - GTN_ADDR=http://localhost:8000
+
   radarr:
     image: linuxserver/radarr:${RADARR_VERSION}
     container_name: radarr
