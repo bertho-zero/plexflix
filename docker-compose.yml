@@ -26,7 +26,7 @@ services:
       - 8388:8388/udp # Shadowsocks
 #      - 8191:8191/tcp # flaresolverr
 #      - 9696:9696/tcp # prowlarr
-      - 8085:8085/tcp # qBittorrent WebUI
+      - 8080:8080/tcp # qBittorrent WebUI
       - 6881:6881/tcp # qBittorrent
       - 6881:6881/udp # qBittorrent
       - 8086:8086/tcp # JOAL
@@ -119,7 +119,7 @@ services:
       - PUID=${UID}
       - UMASK=${UMASK}
       - TZ=${TIMEZONE}
-      - WEBUI_PORT=8085
+      - WEBUI_PORT=8080
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${CONFIG_FOLDER}/qbittorrent/config:/config:z
@@ -139,7 +139,7 @@ services:
     environment:
       - QBT_USERNAME=qbittorrent
       - QBT_PASSWORD=qbittorrent
-      - QBT_ADDR=http://localhost:8085
+      - QBT_ADDR=http://localhost:8080
       - GTN_ADDR=http://localhost:8000
 
   radarr:
