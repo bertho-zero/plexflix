@@ -105,7 +105,6 @@ services:
       - ${RECYCLE_FOLDER}/prowlarr:/recycle:z
       - ${USENET_BLACKHOLE_FOLDER}:/blackhole:z
       - ${USENET_DOWNLOADS_FOLDER}:/downloads:z
-      - ${MEDIA_FOLDER}/AudioBooks:/audiobooks:z
       - ${MEDIA_FOLDER}/Movies:/movies:z
       - ${MEDIA_FOLDER}/Series:/series:z
     ports:
@@ -130,8 +129,6 @@ services:
       - ${CONFIG_FOLDER}/qbittorrent/config:/config:z
       - ${TORRENT_BLACKHOLE_FOLDER}:/blackhole:z
       - ${TORRENT_DOWNLOADS_FOLDER}:/downloads:z
-      - ${MEDIA_FOLDER}/Movies:/movies:z
-      - ${MEDIA_FOLDER}/Series:/tv:z
 
   radarr:
     image: linuxserver/radarr:${RADARR_VERSION}
@@ -172,7 +169,6 @@ services:
       - ${USENET_DOWNLOADS_FOLDER}:/downloads/usenet:z
       - ${USENET_DOWNLOADS_FOLDER}/completed/Series:/downloads/completed/Series:z
       - ${MEDIA_FOLDER}/Series:/series:z
-      - ${MEDIA_FOLDER}/tv:/tv:z
     ports:
       - "8989:8989"
 
