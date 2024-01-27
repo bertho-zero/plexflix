@@ -1,35 +1,29 @@
 {
- "clientId": "8ce6e101-c224-4f09-9721-97ea2495fabf",
- "vapidPrivate": "ZAmtsjAnwYMzzdhaSmIXG4LDfrF2RFAz32zmog-Iydc",
- "vapidPublic": "BL2WkyLbWyA7scFFHN1SDoOL5zRU0YRH-J_6mOQxGDVmXIxLuO-p1QvPgUETgnufXLeLkOoQC4vtk93kScl5MWk",
+ "clientId": "584b4603-f699-46b6-8217-a2f15ced36ed",
+ "vapidPrivate": "YQg3nByttpwyL_2Oo4tFGEMNSYt_AAWDu9f6pIT2PQ8",
+ "vapidPublic": "BLy4gh9XsO7NIjzVinnZssHpvcoMYJ0JbcblFe5olnz6UhxdtLCquXZKNxVbYPtRHLmu95g559k9awPmNEcLab0",
  "main": {
-  "apiKey": "MTcwNjE0MTQzODcwNWIxMjFlYjVhLWUxZTItNDQ0YS05OTkyLWFjMmE5NGUwNzA2Nw==",
+  "apiKey": "MTcwNjM2MDM4Njg4NmUzYjI0YjllLTJkYTUtNDQ3MC1hOTgzLTg1N2NiMWMwYWNkMQ==",
   "applicationTitle": "Overseerr",
   "applicationUrl": "",
   "csrfProtection": false,
   "cacheImages": false,
-  "defaultPermissions": 8388768,
+  "defaultPermissions": 32,
   "defaultQuotas": {
-   "movie": {
-    "quotaLimit": 0,
-    "quotaDays": 7
-   },
-   "tv": {
-    "quotaLimit": 0,
-    "quotaDays": 7
-   }
+   "movie": {},
+   "tv": {}
   },
   "hideAvailable": false,
   "localLogin": true,
   "newPlexLogin": true,
-  "region": "FR",
-  "originalLanguage": "fr",
+  "region": "",
+  "originalLanguage": "",
   "trustProxy": false,
   "partialRequestsEnabled": true,
   "locale": "fr"
  },
  "plex": {
-  "name": "3a062564e018",
+  "name": "Plex",
   "ip": "plex",
   "port": 32400,
   "useSsl": false,
@@ -39,23 +33,18 @@
     "name": "Films",
     "enabled": true,
     "type": "movie",
-    "lastScan": 1706307300032
+    "lastScan": 1706360405058
    },
    {
     "id": "2",
     "name": "Séries TV",
     "enabled": true,
     "type": "show",
-    "lastScan": 1706307300034
+    "lastScan": 1706360405065
    }
-  ],
-  "machineId": "9edaa991a5312bbf52774849c77285a7847b6f95"
+  ]
  },
- "tautulli": {
-  "hostname": "tautulli",
-  "port": 8181,
-  "apiKey": "05efb37c322d41ae87a473a96d8d6ef8"
- },
+ "tautulli": {},
  "radarr": [
   {
    "name": "Radarr",
@@ -107,7 +96,7 @@
   }
  ],
  "public": {
-  "initialized": true
+  "initialized": false
  },
  "notifications": {
   "agents": {
