@@ -6,7 +6,7 @@
 
 /configs/tautulli/config
 
-/media
-/shared
+/media/**/*
+/shared/**/*
 
 !.gitkeep
