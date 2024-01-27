@@ -29,8 +29,6 @@ services:
       - 8085:8085/tcp # qBittorrent WebUI
       - 6881:6881/tcp # qBittorrent
       - 6881:6881/udp # qBittorrent
-      - 8080:8080/tcp # SABnzbd
-      - 8080:8080/udp # SABnzbd
       - 8086:8086/tcp # JOAL
 #      - 7878:7878/tcp # radarr
 #      - 8989:8989/tcp # sonarr
