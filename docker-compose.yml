@@ -52,7 +52,13 @@ services:
     volumes:
       - ${CONFIG_FOLDER}/joal/config:/data:z
       - ${TORRENT_DOWNLOADS_FOLDER}/torrents:/data/torrents:z
-    command: [ "--joal-conf=/data", "--spring.main.web-environment=true", "--server.port=8086", "--joal.ui.path.prefix=joal", "--joal.ui.secret-token=joal" ]
+    entrypoint: >
+      sh -c "exec java -jar /joal/joal.jar \
+      --joal-conf=/data \
+      --spring.main.web-environment=true \
+      --server.port=8086 \
+      --joal.ui.path.prefix=joal \
+      --joal.ui.secret-token=$JOAL_PASSWORD"
 
   overseerr:
     image: linuxserver/overseerr:${OVERSEERR_VERSION}
