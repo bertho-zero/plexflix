@@ -60,6 +60,23 @@ services:
       --joal.ui.path.prefix=joal \
       --joal.ui.secret-token=$JOAL_PASSWORD"
 
+  nginx:
+    image: nginx
+    depends_on:
+      - dashboard
+      - joal
+      - overseerr
+      - plex
+      - prowlarr
+      - qbittorrent
+      - radarr
+      - sonarr
+    restart: unless-stopped
+    volumes:
+      - ${CONFIG_FOLDER}/nginx/config:/etc/nginx/templates
+    ports:
+      - "80:80"
+
   overseerr:
     image: linuxserver/overseerr:${OVERSEERR_VERSION}
     container_name: overseerr
@@ -144,7 +161,7 @@ services:
     restart: unless-stopped
     environment:
       - QBT_USERNAME=qbittorrent
-      - QBT_PASSWORD=qbittorrent
+      - QBT_PASSWORD=${QBITTORRENT_PASSWORD}
       - QBT_ADDR=http://localhost:8080
       - GTN_ADDR=http://localhost:8000
 

@@ -1,0 +1,4 @@
+/dashboard/.yarn/**            linguist-vendored
+/dashboard/.yarn/releases/*    binary
+/dashboard/.yarn/plugins/**/*  binary
+/dashboard/.pnp.*              binary linguist-generated
