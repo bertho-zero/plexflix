@@ -1,0 +1,9 @@
+upstream plex_upstream {
+    server plex:32400;
+    keepalive 32;
+}
+
+upstream overseerr_upstream {
+    server overseerr:5055;
+    keepalive 32;
+}

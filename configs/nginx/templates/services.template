@@ -1,0 +1,115 @@
+location ^~ /plex/ {
+    set $app 'plex';
+
+    rewrite /plex(/.*) $1 break;
+
+    # Plex has A LOT of javascript, xml and html. This helps a lot, but if it causes playback issues with devices turn it off. (Haven't encountered any yet)
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1000;
+    gzip_proxied any;
+    gzip_types text/plain text/css text/xml application/xml text/javascript application/x-javascript image/svg+xml;
+    gzip_disable "MSIE [1-6]\.";
+
+    # Nginx default client_max_body_size is 1MB, which breaks Camera Upload feature from the phones.
+    # Increasing the limit fixes the issue. Anyhow, if 4K videos are expected to be uploaded, the size might need to be increased even more
+    client_max_body_size 100M;
+
+    # Redirect location headers
+    proxy_redirect ^ /plex;
+
+    # Activation et configuration de sub_filter
+    proxy_set_header Accept-Encoding "";
+    sub_filter_once off;
+    sub_filter_types text/html text/css text/javascript application/javascript application/json;
+    sub_filter 'href="/' 'href="/$app/';
+    sub_filter 'src="/' 'src="/$app/';
+    sub_filter 'action="/' 'action="/$app/';
+    sub_filter '/web/' '/$app/web/';
+
+    # sub_filter_once off;
+    # sub_filter_types text/html text/css application/javascript application/json;
+    # sub_filter '/web/' '/plex/web/';
+
+    proxy_pass http://plex_upstream;
+
+    # if a request to / comes in, 301 redirect to the main plex page.
+    # but only if it doesn't contain the X-Plex-Device-Name header
+    # this fixes a bug where you get permission issues when accessing the web dashboard
+    if ($http_x_plex_device_name = '') {
+        rewrite ^/$ http://$http_host/web/index.html;
+    }
+
+    # proxy_redirect off;
+    proxy_buffering off;
+    include proxy.conf;
+}
+
+location ^~ /overseerr/ {
+    set $app 'overseerr';
+
+    rewrite /overseerr(/.*) $1 break;
+
+    # Redirect location headers
+    proxy_redirect ^ /$app;
+    proxy_redirect /setup /$app/setup;
+    proxy_redirect /login /$app/login;
+
+    # Sub filters to replace hardcoded paths
+    proxy_set_header Accept-Encoding "";
+    sub_filter_once off;
+    sub_filter_types text/html text/css text/javascript application/javascript application/json;
+    sub_filter 'href="/"' 'href="/$app"';
+    sub_filter 'href="/login"' 'href="/$app/login"';
+    sub_filter 'href:"/"' 'href:"/$app"';
+    sub_filter '\/_next' '\/$app\/_next';
+    sub_filter '/_next' '/$app/_next';
+    sub_filter '/api/v1' '/$app/api/v1';
+    sub_filter '/login/plex/loading' '/$app/login/plex/loading';
+    sub_filter '/images/' '/$app/images/';
+    # sub_filter '/android-' '/$app/android-';
+    sub_filter '/apple-' '/$app/apple-';
+    sub_filter '/favicon' '/$app/favicon';
+    sub_filter '/logo_' '/$app/logo_';
+    sub_filter '/site.webmanifest' '/$app/site.webmanifest';
+    sub_filter '/sw.js' '/$app/sw.js';
+    sub_filter '/offline.html' '/$app/offline.html';
+
+    proxy_pass http://overseerr_upstream;
+    include proxy.conf;
+}
+
+location ^~ /radarr/ {
+    proxy_redirect off;
+    proxy_pass http://radarr:7878;
+    include proxy.conf;
+}
+
+location ^~ /sonarr/ {
+    proxy_redirect off;
+    proxy_pass http://sonarr:8989;
+    include proxy.conf;
+}
+
+location ^~ /prowlarr/ {
+    proxy_redirect off;
+    proxy_pass http://prowlarr:9696;
+    include proxy.conf;
+}
+
+location ^~ /qbittorrent/ {
+    rewrite /qbittorrent(/.*) $1 break;
+    proxy_pass http://gluetun:8080;
+    include proxy.conf;
+}
+
+location ~ ^/joal(/|$) {
+    proxy_pass http://gluetun:8086;
+    proxy_hide_header x-frame-options;
+    include proxy.conf;
+}
+
+location / {
+    proxy_pass http://dashboard:3000;
+    include proxy.conf;
+}

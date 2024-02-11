@@ -61,7 +61,11 @@ services:
       --joal.ui.secret-token=$JOAL_PASSWORD"
 
   nginx:
-    image: nginx
+    build:
+      context: ${CONFIG_FOLDER}/nginx
+      dockerfile: Dockerfile
+      args:
+        UPSTREAM_VERSION: ${NGINX_VERSION}
     depends_on:
       - dashboard
       - joal
@@ -72,10 +76,19 @@ services:
       - radarr
       - sonarr
     restart: unless-stopped
+    environment:
+      - UID=${UID}
+      - GID=${GID}
+      - DOMAIN=${DOMAIN}
+      - EMAIL=${EMAIL}
     volumes:
-      - ${CONFIG_FOLDER}/nginx/config:/etc/nginx/templates
+      - ${CONFIG_FOLDER}/nginx/templates:/tmp/templates
+      - ${CONFIG_FOLDER}/nginx/config:/tmp/config
+      - ${CONFIG_FOLDER}/certbot/letsencrypt:/etc/letsencrypt
+      - ${CONFIG_FOLDER}/certbot/www:/var/www/certbot
     ports:
       - "80:80"
+      - "443:443"
 
   overseerr:
     image: linuxserver/overseerr:${OVERSEERR_VERSION}
