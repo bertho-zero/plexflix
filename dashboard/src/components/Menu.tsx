@@ -1,18 +1,28 @@
-import { useState, useRef, useEffect } from 'react';
-import './menu.css';
+import { useState, useRef, useEffect, ReactNode } from 'react';
 import BarsIcon from './BarsIcon';
+import { css } from 'styled-system/css';
 
 const BORDER_MARGIN = 35; // px
 const MENU_MARGIN = 16; // px
 
-export default function Menu({ children }) {
+const coverStyle = css({
+  display: 'none',
+  zIndex: '1000000',
+  height: '100vh',
+  width: '100vw',
+  position: 'fixed',
+  top: '0',
+  left: '0',
+});
+
+export default function Menu({ children }: { children: ReactNode }) {
   const [dragTransitioning, setDragTransitioning] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
   const isDraggingRef = useRef(false);
-  const draggableMenuRef = useRef(null);
-  const draggableMenuButtonRef = useRef(null);
-  const menuItemsRef = useRef(null);
-  const coverRef = useRef(null);
+  const draggableMenuRef = useRef<HTMLDivElement>(null);
+  const draggableMenuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuItemsRef = useRef<HTMLDivElement>(null);
+  const coverRef = useRef<HTMLDivElement>(null);
 
   let elemX = 0;
   let elemY = 0;
@@ -23,24 +33,26 @@ export default function Menu({ children }) {
     setMenuVisible(isVisible => !isVisible);
   };
 
-  const setDragging = isDragging => {
+  const setDragging = (isDragging: boolean) => {
     isDraggingRef.current = isDragging;
     setDragTransitioning(!isDragging);
-  }
+  };
 
-  const dragMouseDown = (e) => {
+  const dragMouseDown = (e: MouseEvent) => {
     e.preventDefault();
     setDragging(false);
     initialX = elemX = e.clientX;
     initialY = elemY = e.clientY;
     document.addEventListener('pointerup', closeDragElement);
     document.addEventListener('pointermove', elementDrag, { passive: false });
-    coverRef.current.style.display = 'block';
+    if (coverRef.current) {
+      coverRef.current.style.display = 'block';
+    }
   };
 
-  const elementDrag = (e) => {
+  const elementDrag = (e: MouseEvent) => {
     e.preventDefault();
-    const elem = draggableMenuRef.current;
+    const elem = draggableMenuRef.current as HTMLElement;
     const rect = elem.getBoundingClientRect();
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
@@ -50,11 +62,11 @@ export default function Menu({ children }) {
     elemY = e.clientY;
 
     if (Math.abs(initialX - elemX) > 5 || Math.abs(initialY - elemY) > 5) {
-        setDragging(true);
+      setDragging(true);
     }
 
-    const newLeft = draggableMenuRef.current.offsetLeft - dx;
-    const newTop = draggableMenuRef.current.offsetTop - dy;
+    const newLeft = elem.offsetLeft - dx;
+    const newTop = elem.offsetTop - dy;
 
     if (newLeft < centerX - rect.width / 2) {
       elem.style.left = `${newLeft}px`;
@@ -72,8 +84,8 @@ export default function Menu({ children }) {
       elem.style.bottom = `${window.innerHeight - newTop - rect.height}px`;
     }
 
-    draggableMenuRef.current.style.top = newTop + "px";
-    draggableMenuRef.current.style.left = newLeft + "px";
+    elem.style.top = newTop + 'px';
+    elem.style.left = newLeft + 'px';
   };
 
   const closeDragElement = () => {
@@ -88,11 +100,13 @@ export default function Menu({ children }) {
 
     setDragging(false);
 
-    coverRef.current.style.display = 'none';
+    if (coverRef.current) {
+      coverRef.current.style.display = 'none';
+    }
   };
 
   const snapToClosestEdge = () => {
-    const elem = draggableMenuRef.current;
+    const elem = draggableMenuRef.current as HTMLElement;
     const rect = elem.getBoundingClientRect();
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
@@ -134,8 +148,8 @@ export default function Menu({ children }) {
   };
 
   const placeMenuItems = () => {
-    const elem = draggableMenuRef.current;
-    const menuItems = menuItemsRef.current;
+    const elem = draggableMenuRef.current as HTMLElement;
+    const menuItems = menuItemsRef.current as HTMLElement;
     const rect = elem.getBoundingClientRect();
     const isTopHalf = rect.top + rect.height / 2 < window.innerHeight / 2;
 
@@ -144,10 +158,10 @@ export default function Menu({ children }) {
     } else {
       menuItems.style.top = (-menuItems.offsetHeight - MENU_MARGIN) + 'px';
     }
-  }
+  };
 
   useEffect(() => {
-    const elem = draggableMenuButtonRef.current;
+    const elem = draggableMenuButtonRef.current as HTMLElement;
     elem.addEventListener('pointerdown', dragMouseDown);
 
     return () => {
@@ -169,12 +183,70 @@ export default function Menu({ children }) {
 
   return (
     <>
-      <div ref={coverRef} className="cover" />
-      <div ref={draggableMenuRef} id="draggableMenu" className={dragTransitioning ? 'draggable-transition' : ''}>
-        <button ref={draggableMenuButtonRef} id="draggableMenuButton">
-          <BarsIcon width="32" height="32" fill="#e61e25" />
+      <div ref={coverRef} className={coverStyle} />
+      <div
+        ref={draggableMenuRef}
+        className={css(
+          {
+            width: '52px',
+            height: '52px',
+            position: 'fixed',
+            zIndex: '1000000',
+            bottom: `${BORDER_MARGIN}px`,
+            right: `${BORDER_MARGIN}px`,
+            transition: dragTransitioning ? 'top 0.5s ease, bottom 0.5s ease, left 0.5s ease, right 0.5s ease' : '',
+          },
+        )}
+      >
+        <button
+          ref={draggableMenuButtonRef}
+          className={css({
+            touchAction: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'whitesmoke',
+            color: 'white',
+            textAlign: 'center',
+            borderRadius: '20em',
+            border: '3px solid transparent',
+            _hover: {
+              borderColor: 'red2',
+            },
+          })}
+        >
+          <BarsIcon width="32" height="32" className={css({ color: 'red1' })} />
         </button>
-        <div ref={menuItemsRef} id="menuItems" className={menuVisible ? '' : 'hidden'}>
+        <div
+          ref={menuItemsRef}
+          className={css(
+            {
+              position: 'absolute',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5em',
+              left: '-3px',
+              '& button': {
+                display: 'flex',
+                borderRadius: '0.5em',
+                border: '3px solid transparent',
+                backgroundColor: 'transparent',
+                overflow: 'auto',
+                _hover: {
+                  borderColor: 'red2',
+                },
+              },
+            },
+            !menuVisible ? {
+              visibility: 'hidden',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+            } : null,
+          )}
+        >
           {children}
         </div>
       </div>
