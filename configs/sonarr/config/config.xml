@@ -6,12 +6,12 @@
   <LaunchBrowser>True</LaunchBrowser>
   <ApiKey>25cf306248c34a7ca4a74b5e3e343b42</ApiKey>
   <AuthenticationMethod>Forms</AuthenticationMethod>
-  <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+  <AuthenticationRequired>Enabled</AuthenticationRequired>
   <Branch>main</Branch>
   <LogLevel>info</LogLevel>
   <SslCertPath></SslCertPath>
   <SslCertPassword></SslCertPassword>
-  <UrlBase></UrlBase>
+  <UrlBase>sonarr</UrlBase>
   <InstanceName>Sonarr</InstanceName>
   <UpdateMechanism>Docker</UpdateMechanism>
 </Config>

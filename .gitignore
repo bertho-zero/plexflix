@@ -2,11 +2,4 @@
 
 /.env
 
-/configs-dev
-
-/configs/tautulli/config
-
-/media/**/*
-/shared/**/*
-
-!.gitkeep
+/configs-*

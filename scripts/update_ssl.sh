@@ -7,7 +7,7 @@ source "$root/.env"
 
 export CERT_DIR_PATH="$root/configs/certbot/letsencrypt";
 export WEBROOT_PATH="$root/configs/certbot/www";
-export LE_RENEW_HOOK="docker compose exec nginx nginx -s reload";
+export LE_RENEW_HOOK="docker compose restart nginx";
 export DOMAINS="$DOMAIN";
 export EMAIL="$EMAIL";
 export EXP_LIMIT="30";

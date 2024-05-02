@@ -6,12 +6,12 @@
   <LaunchBrowser>True</LaunchBrowser>
   <ApiKey>c38175fa27a14671a9be2d52c2a580f2</ApiKey>
   <AuthenticationMethod>Forms</AuthenticationMethod>
-  <AuthenticationRequired>DisabledForLocalAddresses</AuthenticationRequired>
+  <AuthenticationRequired>Enabled</AuthenticationRequired>
   <Branch>master</Branch>
   <LogLevel>info</LogLevel>
   <SslCertPath></SslCertPath>
   <SslCertPassword></SslCertPassword>
-  <UrlBase></UrlBase>
+  <UrlBase>prowlarr</UrlBase>
   <InstanceName>Prowlarr</InstanceName>
   <UpdateMechanism>Docker</UpdateMechanism>
 </Config>

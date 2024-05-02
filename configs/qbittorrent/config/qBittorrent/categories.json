@@ -1,11 +1,8 @@
 {
-    "prowlarr": {
-        "save_path": "/downloads/completed/Prowlarr"
+    "movies": {
+        "save_path": "movies"
     },
-    "radarr": {
-        "save_path": "/downloads/completed/Radarr"
-    },
-    "sonarr": {
-        "save_path": "/downloads/completed/Sonarr"
+    "series": {
+        "save_path": "series"
     }
 }

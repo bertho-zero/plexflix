@@ -32,6 +32,12 @@ services:
       - 8086:8086/tcp # JOAL
 #      - 7878:7878/tcp # radarr
 #      - 8989:8989/tcp # sonarr
+    healthcheck:
+      test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     volumes:
       - ${CONFIG_FOLDER}/gluetun:/gluetun
     env_file: .env
@@ -51,7 +57,7 @@ services:
     restart: unless-stopped
     volumes:
       - ${CONFIG_FOLDER}/joal/config:/data:z
-      - ${TORRENT_DOWNLOADS_FOLDER}/torrents:/data/torrents:z
+      - ${DATA_FOLDER}/torrents/torrents:/data/torrents:z
     entrypoint: >
       sh -c "exec java -jar /joal/joal.jar \
       --joal-conf=/data \
@@ -108,15 +114,13 @@ services:
     # Leave commented unless your machine is capable of Hardware acceleration - Intel / Nvidia
     # More information at; https://github.com/linuxserver/docker-plex#hardware-acceleration
     # devices: [ "/dev/dri:/dev/dri" ] # Intel QuickSync
-    env_file: ${CONFIG_FOLDER}/plex/.env
     environment:
       ["PGID=${GID}", "PUID=${UID}", "UMASK=${UMASK}", "TZ=${TIMEZONE}"]
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${CONFIG_FOLDER}/plex/config:/config:z
       - ${CONFIG_FOLDER}/plex/transcode:/transcode:z
-      - ${MEDIA_FOLDER}/Series:/data/Series:z
-      - ${MEDIA_FOLDER}/Movies:/data/Movies:z
+      - ${DATA_FOLDER}/media:/data/media:z
     ports:
       - "32400:32400/tcp"
       - "1900:1900/udp"
@@ -136,9 +140,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${CONFIG_FOLDER}/prowlarr/config:/config:z
-      - ${RECYCLE_FOLDER}/prowlarr:/recycle:z
-      - ${MEDIA_FOLDER}/Movies:/movies:z
-      - ${MEDIA_FOLDER}/Series:/series:z
+      - ${DATA_FOLDER}:/data:z
     ports:
       - "9696:9696"
 
@@ -159,8 +161,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${CONFIG_FOLDER}/qbittorrent/config:/config:z
-      - ${TORRENT_BLACKHOLE_FOLDER}:/blackhole:z
-      - ${TORRENT_DOWNLOADS_FOLDER}:/downloads:z
+      - ${DATA_FOLDER}/torrents:/data/torrents:z
 
   qbittorrent-port-forward-gluetun-server:
     image: mjmeli/qbittorrent-port-forward-gluetun-server
@@ -177,6 +178,8 @@ services:
       - QBT_PASSWORD=${QBITTORRENT_PASSWORD}
       - QBT_ADDR=http://localhost:8080
       - GTN_ADDR=http://localhost:8000
+    volumes:
+      - ./scripts/qbittorrent_port_forward.sh:/usr/src/app/entrypoint.sh
 
   radarr:
     image: linuxserver/radarr:${RADARR_VERSION}
@@ -190,10 +193,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${CONFIG_FOLDER}/radarr/config:/config:z
-      - ${RECYCLE_FOLDER}/radarr:/recycle:z
-      - ${TORRENT_DOWNLOADS_FOLDER}:/downloads/torrent:z
-      - ${TORRENT_DOWNLOADS_FOLDER}/completed/Radarr:/downloads/completed/Radarr:z
-      - ${MEDIA_FOLDER}/Movies:/movies:z
+      - ${DATA_FOLDER}:/data:z
     ports:
       - "7878:7878"
 
@@ -209,10 +209,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${CONFIG_FOLDER}/sonarr/config:/config:z
-      - ${RECYCLE_FOLDER}/sonarr:/recycle:z
-      - ${TORRENT_DOWNLOADS_FOLDER}/completed/Sonarr:/downloads/completed/Sonarr:z
-      - ${TORRENT_DOWNLOADS_FOLDER}:/downloads/torrent:z
-      - ${MEDIA_FOLDER}/Series:/series:z
+      - ${DATA_FOLDER}:/data:z
     ports:
       - "8989:8989"
 
@@ -224,5 +221,6 @@ services:
       ["PGID=${GID}", "PUID=${UID}", "UMASK=${UMASK}", "TZ=${TIMEZONE}"]
     volumes:
       - ${CONFIG_FOLDER}/tautulli/config:/config:z
+      - ${CONFIG_FOLDER}/plex/config/Library/Application Support/Plex Media Server/Logs:/plex/logs:z
     ports:
       - "8181:8181"
