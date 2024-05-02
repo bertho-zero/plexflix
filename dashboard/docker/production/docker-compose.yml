@@ -9,7 +9,7 @@ services:
     environment:
       NEXT_CONFIG_DIRECTORY: /app/config
     volumes:
-      - ./dashboard/config:/app/config
+      - ${CONFIG_FOLDER}/dashboard:/app/config
     restart: unless-stopped
     ports:
       - "3000:3000"
