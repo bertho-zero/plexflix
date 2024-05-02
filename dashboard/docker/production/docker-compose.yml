@@ -6,6 +6,10 @@ services:
     build:
       context: dashboard
       dockerfile: ./docker/production/Dockerfile
+    environment:
+      NEXT_CONFIG_DIRECTORY: /app/config
+    volumes:
+      - ./dashboard/config:/app/config
     restart: unless-stopped
     ports:
       - "3000:3000"

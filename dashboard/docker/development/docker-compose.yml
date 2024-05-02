@@ -6,9 +6,17 @@ services:
     build:
       context: dashboard
       dockerfile: ./docker/development/Dockerfile
+    environment:
+      NEXT_CONFIG_DIRECTORY: /app/config
     volumes:
       - ./dashboard/src:/app/src
       - ./dashboard/public:/app/public
+      - ./dashboard/styled-system:/app/styled-system
+      - ./dashboard/next.config.mjs:/app/next.config.mjs
+      - ./dashboard/panda.config.mjs:/app/panda.config.mjs
+      - ./dashboard/postcss.config.cjs:/app/postcss.config.cjs
+      - ./dashboard/tsconfig.json:/app/tsconfig.json
+      - ./dashboard/config:/app/config
     restart: unless-stopped
     ports:
       - "3000:3000"
