@@ -10,6 +10,7 @@ COPY .yarn/ ./.yarn/
 RUN corepack enable
 RUN npm install -g yarn@latest --force # fix graceful exit
 RUN yarn --frozen-lockfile
+RUN yarn prepare
 
 COPY src ./src
 COPY public ./public
