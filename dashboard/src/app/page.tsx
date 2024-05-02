@@ -14,7 +14,7 @@ async function getSettings() {
 }
 
 export default async function Home() {
-  const settings = await getSettings();
+  // const settings = await getSettings();
 
   // if (!settings.initialized) {
   //   return redirect('/setup');
