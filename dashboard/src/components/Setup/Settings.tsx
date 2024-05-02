@@ -74,7 +74,7 @@ const profileTest = {
   }],
 };
 
-function Profile({ profile, onChange }) {
+function Profile({ profile, onChange }: any) {
   const qualities = new Set([...profile.qualities ?? [], '2160p', '1080p']);
 
   return (

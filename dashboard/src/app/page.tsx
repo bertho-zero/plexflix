@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import HomePage from '@/components/HomePage';
 
+export const dynamic = 'force-dynamic';
+
 async function getSettings() {
   const res = await fetch('http://localhost:3000/api/settings');
 

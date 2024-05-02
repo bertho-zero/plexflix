@@ -5,6 +5,8 @@ import { getSettings } from '@/lib/settings';
 
 const COOKIE_NAME = 'plexflix-jwt-token';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(_request: Request) {
   const settings = getSettings();
   const cookieStore = cookies();

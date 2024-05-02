@@ -16,7 +16,7 @@ services:
       - ./dashboard/panda.config.mjs:/app/panda.config.mjs
       - ./dashboard/postcss.config.cjs:/app/postcss.config.cjs
       - ./dashboard/tsconfig.json:/app/tsconfig.json
-      - ./dashboard/config:/app/config
+      - ${CONFIG_FOLDER}/dashboard:/app/config
     restart: unless-stopped
     ports:
       - "3000:3000"
