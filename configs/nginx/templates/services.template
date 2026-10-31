@@ -34,6 +34,7 @@ location ^~ /plex/ {
     sub_filter 'action="/' 'action="/$app/';
     sub_filter '/web/' '/$app/web/';
     sub_filter '</head>' '<script src="/iframeLocation.contentWindow.js"></script></head>';
+    sub_filter ' integrity="sha384-' ' integrityDisabled="sha384-';
 
     # sub_filter_once off;
     # sub_filter_types text/html text/css application/javascript application/json;
@@ -69,6 +70,18 @@ location ^~ /plex/ {
     include proxy.conf;
 }
 
+location ^~ /jellyfin/ {
+    proxy_redirect off;
+
+    proxy_set_header Accept-Encoding "";
+    sub_filter_once on;
+    sub_filter_types text/html;
+    sub_filter '</head>' '<script src="/iframeLocation.contentWindow.js"></script></head>';
+
+    proxy_pass http://jellyfin:8096;
+    include proxy.conf;
+}
+
 location ^~ /overseerr/ {
     set $app 'overseerr';
 
@@ -91,6 +104,9 @@ location ^~ /overseerr/ {
     sub_filter '/api/v1' '/$app/api/v1';
     sub_filter '/login/plex/loading' '/$app/login/plex/loading';
     sub_filter '/images/' '/$app/images/';
+    # Seerr : cache d'images et avatars
+    sub_filter '/imageproxy/' '/$app/imageproxy/';
+    sub_filter '/avatarproxy/' '/$app/avatarproxy/';
     sub_filter '/android-' '/$app/android-';
     sub_filter '/apple-' '/$app/apple-';
     sub_filter '/favicon' '/$app/favicon';

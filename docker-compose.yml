@@ -2,14 +2,32 @@ version: "3.8"
 
 services:
   flaresolverr:
-    image: flaresolverr/flaresolverr:${FLARESOLVERR_VERSION}
+#    image: flaresolverr/flaresolverr:${FLARESOLVERR_VERSION}
+    image: alexfozor/flaresolverr:pr-1300-experimental
+#    image: pr-1300-experimental
+#    image: 21hsmw/flaresolverr:nodriver
     container_name: flaresolverr
     restart: unless-stopped
-    environment: [ "TZ=${TIMEZONE}" ]
+    environment: [ "TZ=${TIMEZONE}", "DRIVER=nodriver" ]
     volumes:
       - /etc/localtime:/etc/localtime:ro
     ports:
       - "8191:8191"
+
+
+#Version de test
+ # flaresolverr:
+  #  image: ghcr.io/flaresolverr/flaresolverr:latest
+   # container_name: flaresolverr
+   # restart: unless-stopped
+   # environment:
+    #  - TZ=${TIMEZONE}
+     # - LOG_LEVEL=info
+     # - CHALLENGE_TIMEOUT=300
+     # - DRIVER=chrome
+   # ports:
+    #  - "8191:8191"
+
 
   gluetun:
     image: qmcgaw/gluetun:${GLUETUN_VERSION}
@@ -46,6 +64,27 @@ services:
       - PUID=${UID}
       - UMASK=${UMASK}
       - TZ=${TIMEZONE}
+
+  jellyfin:
+    image: linuxserver/jellyfin:${JELLYFIN_VERSION}
+    container_name: jellyfin
+    restart: unless-stopped
+    # Leave commented unless your machine is capable of Hardware acceleration
+    # More information at: https://github.com/linuxserver/docker-jellyfin?tab=readme-ov-file#hardware-acceleration-enhancements
+    devices: [ "/dev/dri:/dev/dri" ] # Intel QuickSync
+    group_add:
+      - 110
+    environment:
+      ["PGID=${GID}", "PUID=${UID}", "UMASK=${UMASK}", "TZ=${TIMEZONE}", "JELLYFIN_PublishedServerUrl=${HOSTNAME}/jellyfin"]
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${CONFIG_FOLDER}/jellyfin:/config:z
+      - ${DATA_FOLDER}/media:/data/media:z
+    ports:
+      - 8096:8096
+      - 8920:8920
+      - 7359:7359/udp
+      - 1900:1900/udp
 
   joal:
     image: anthonyraymond/joal:${JOAL_VERSION}
@@ -96,16 +135,25 @@ services:
       - "80:80"
       - "443:443"
 
+  # Seerr (successeur d'Overseerr) : on garde le nom overseerr pour nginx et l'URL /overseerr.
   overseerr:
-    image: linuxserver/overseerr:${OVERSEERR_VERSION}
+    image: ghcr.io/seerr-team/seerr:v3.5.1
     container_name: overseerr
     restart: unless-stopped
+    # Seerr ne fournit plus de processus init ; tourne en UID 1000 (node).
+    init: true
     environment:
-      [ "PGID=${GID}", "PUID=${UID}", "UMASK=${UMASK}", "TZ=${TIMEZONE}" ]
+      - TZ=${TIMEZONE}
     volumes:
-      - ${CONFIG_FOLDER}/overseerr/config:/config:z
+      - ${CONFIG_FOLDER}/overseerr/config:/app/config:z
     ports:
       - 5055:5055
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
 
   plex:
     image: linuxserver/plex:${PLEX_VERSION}
@@ -123,7 +171,7 @@ services:
       - ${DATA_FOLDER}/media:/data/media:z
     ports:
       - "32400:32400/tcp"
-      - "1900:1900/udp"
+      # - "1900:1900/udp"
       - "8324:8324/tcp"
       - "32410:32410/udp"
       - "32412:32412/udp"
